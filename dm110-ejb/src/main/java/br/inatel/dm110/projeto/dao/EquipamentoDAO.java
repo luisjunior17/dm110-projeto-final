@@ -16,13 +16,13 @@ public class EquipamentoDAO {
 	public String getStatus(String ip)
 	{
 		String status = "{ \"status\": \"Equipamento não encontrado\"}";
-		List<Equipamento> equipmentList = 
+		List<Equipamento> listaEquipamento = 
 				 em.createQuery("FROM EQUIPAMENTO e WHERE e.ip=:ip",Equipamento.class)
 				.setParameter("ip", ip)
 				.getResultList();
 				
-		if(equipmentList.size()>0)
-				status = "{ \"status\":\""+equipmentList.get(0).getStatus().trim()+"\"}";
+		if(listaEquipamento.size() > 0)
+				status = "{ \"status\":\""+listaEquipamento.get(0).getStatus().trim()+"\"}";
 		
 		return status;
 		
