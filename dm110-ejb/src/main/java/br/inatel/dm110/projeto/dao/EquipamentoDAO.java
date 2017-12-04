@@ -15,9 +15,9 @@ public class EquipamentoDAO {
 
 	public String getStatus(String ip)
 	{
-		String status = "{ \"status\": \"Equipamento não encontrado\"}";
+		String status = "{ \"status\": \"Não foi possível encontrar o equipamento!!\"}";
 		List<Equipamento> listaEquipamento = 
-				 em.createQuery("FROM EQUIPAMENTO e WHERE e.ip=:ip",Equipamento.class)
+				 em.createQuery("FROM equipamento e WHERE e.ip=:ip",Equipamento.class)
 				.setParameter("ip", ip)
 				.getResultList();
 				
@@ -28,7 +28,7 @@ public class EquipamentoDAO {
 		
 	}
 	
-	public void insert(Equipamento equipamento) {
+	public void adicionaEquipamento(Equipamento equipamento) {
 		em.persist(equipamento);
 	}
 }

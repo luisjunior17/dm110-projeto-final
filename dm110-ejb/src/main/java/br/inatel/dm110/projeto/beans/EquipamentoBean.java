@@ -14,13 +14,11 @@ import javax.jms.Queue;
 import javax.jms.Session;
 
 import br.inatel.dm110.projeto.dao.EquipamentoDAO;
-import br.inatel.dm110.projeto.entities.*;
+import br.inatel.dm110.projeto.entities.ListaAux;
 import br.inatel.dm110.projeto.interfaces.EquipamentoLocal;
 import br.inatel.dm110.projeto.interfaces.EquipamentoRemote;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 
 @Stateless
@@ -33,20 +31,20 @@ public class EquipamentoBean implements EquipamentoLocal, EquipamentoRemote {
 	
 	@Resource(lookup="java:/ConnectionFactory")
 	private ConnectionFactory connectionFactory;
-	@Resource(lookup="java:/jms/queue/equipmentControlQueue")
+	@Resource(lookup="java:/jms/queue/java:/jms/queue/projetoDM110queue")
 	private Queue queue;
 	
 	@Override
 	public void addEquipamento(List<String> ips){
 		
-		ListHelper ipList = new ListHelper();
-		ipList.setIps(ips);
+		ListaAux listaIP = new ListaAux();
+		listaIP.setIp(ips);
 
 		try (Connection connection = connectionFactory.createConnection();
 				Session session = connection.createSession();
 				MessageProducer producer = session.createProducer(queue);) {
 			
-			ObjectMessage objMessage = session.createObjectMessage(ipList);
+			ObjectMessage objMessage = session.createObjectMessage(listaIP);
 			producer.send(objMessage);
 		} catch (JMSException e) {
 			throw new RuntimeException(e);
@@ -59,8 +57,6 @@ public class EquipamentoBean implements EquipamentoLocal, EquipamentoRemote {
 		
 		return equipamentoDAO.getStatus(ip);
 		
-	}
-
-
+	}	
 
 }

@@ -6,44 +6,75 @@ import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+import javax.jms.ObjectMessage;
 
-import br.inatel.dm110.projeto.interfaces.Equipamento;
+import br.inatel.dm110.projeto.beans.PingGenerator;
+import br.inatel.dm110.projeto.dao.EquipamentoDAO;
+import br.inatel.dm110.projeto.entities.Equipamento;
+import br.inatel.dm110.projeto.entities.ListaAux;
+
 
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName="destinationType",
 				propertyValue="javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName="destination",
-			propertyValue="java:/jms/queue/dm110queue"),
+			propertyValue="java:/jms/queue/projetoDM110queue"),
 		@ActivationConfigProperty(propertyName="maxSession",
-			propertyValue="5"),
+			propertyValue="10"),
 		
 })
 public class EquipamentoMDB implements MessageListener {
 
 	@EJB
-	private Equipamento inventory;
+	private EquipamentoDAO equipamentoDAO;
 	
 	@Override
 	public void onMessage(Message message) {
-		if(message instanceof TextMessage){
-			TextMessage textMessage = (TextMessage) message;
-			try {
-				String text = textMessage.getText();
-				System.out.println("### Iniciando processamento...");
-				Thread.sleep(5000);
-				System.out.println("### Processando mensagem: " + text);
-				//inventory.createNewCustomer(name, email, endereco);
-				Thread.sleep(5000);
-				System.out.println("### Finalizando processamento...");
-			} catch (JMSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		try {
+			if(message instanceof ObjectMessage){
+				ObjectMessage objMessage = (ObjectMessage) message;
+				Object object = objMessage.getObject();
+				if(object instanceof ListaAux){
+					
+				ListaAux listaIP = (ListaAux) object;
+				
+				for (String ip : listaIP.getIp()) {
+					String status = "Ativo";
+					boolean resultPing = false;					
+					
+					Equipamento equipamento = new Equipamento();
+					equipamento.setIp(ip);
+					resultPing = PingGenerator.execPing(ip);
+					
+					if(!resultPing){
+						status = "Inativo";
+					}else{
+						status = "Ativo";
+					}					
+										
+					equipamento.setStatus(status);
+					salvarIP(equipamento);
+				}
+				
+				}
+				else
+				{
+					System.out.println("ERRO - Não há lista de IP's na mensagem!!!");
+				}
+			
 			}
+			else{
+				System.out.println("ERRO - Esta mensagem não é um objeto!!!");
+			}
+		} catch (JMSException e) {
+			
+			e.printStackTrace();
 		}
+		
+	}
+	
+	private void salvarIP(Equipamento equipamento) {
+		equipamentoDAO.adicionaEquipamento(equipamento);
 		
 	}
 
