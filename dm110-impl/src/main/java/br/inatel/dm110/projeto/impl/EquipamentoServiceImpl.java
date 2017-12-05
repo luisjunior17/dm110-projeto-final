@@ -1,7 +1,6 @@
 package br.inatel.dm110.projeto.impl;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;

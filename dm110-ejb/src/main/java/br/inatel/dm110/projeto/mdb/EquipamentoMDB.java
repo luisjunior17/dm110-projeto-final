@@ -1,6 +1,5 @@
 package br.inatel.dm110.projeto.mdb;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.ActivationConfigProperty;
