@@ -1,5 +1,8 @@
 package br.inatel.dm110.projeto.mdb;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -30,40 +33,44 @@ public class EquipamentoMDB implements MessageListener {
 	
 	@Override
 	public void onMessage(Message message) {
-		try {
-			if(message instanceof ObjectMessage){
+		try 
+		{
+			if(message instanceof ObjectMessage)
+			{
 				ObjectMessage objMessage = (ObjectMessage) message;
 				Object object = objMessage.getObject();
-				if(object instanceof ListaAux){
-					
-				ListaAux listaIP = (ListaAux) object;
 				
-				for (String ip : listaIP.getIp()) {
-					String status = "Ativo";
-					boolean resultPing = false;					
-					
-					Equipamento equipamento = new Equipamento();
-					equipamento.setIp(ip);
-					resultPing = PingGenerator.execPing(ip);
-					
-					if(!resultPing){
-						status = "Inativo";
-					}else{
-						status = "Ativo";
-					}					
-										
-					equipamento.setStatus(status);
-					salvarIP(equipamento);
-				}
-				
-				}
-				else
+				if(object instanceof ListaAux)
 				{
-					System.out.println("ERRO - Não há lista de IP's na mensagem!!!");
+					String status;
+					boolean resultPing;					
+					Equipamento equipamento = new Equipamento();
+					
+					ListaAux listaIP = (ListaAux) object;
+					
+					List<String> ipGenerated;
+					ipGenerated = listaIP.getIp();
+					
+					for (String ip : ipGenerated) {
+						
+						equipamento.setIp(ip);
+						resultPing = PingGenerator.execPing(ip);
+						
+						if(!resultPing){
+							status = "Inativo";
+						}else{
+							status = "Ativo";
+						}					
+											
+						equipamento.setStatus(status);
+						salvarIP(equipamento);
+					}
+				
+				} else {
+					System.out.println("ERRO - Lista de IP's não existe!!!");
 				}
 			
-			}
-			else{
+			} else {
 				System.out.println("ERRO - Esta mensagem não é um objeto!!!");
 			}
 		} catch (JMSException e) {

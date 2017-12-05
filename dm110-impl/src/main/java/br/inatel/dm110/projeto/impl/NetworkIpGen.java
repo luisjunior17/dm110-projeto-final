@@ -17,7 +17,7 @@ public class NetworkIpGen {
 		}
 	}
 
-	private static String[] generateIps(String networkIp, int cidr) {
+	public static String[] generateIps(String networkIp, int cidr) {
 		int rangeSize = 0;
 		for (int i = 0; i < 32 - cidr; i++) {
 			rangeSize |= 1 << i;

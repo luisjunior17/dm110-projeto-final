@@ -15,14 +15,19 @@ public class EquipamentoDAO {
 
 	public String getStatus(String ip)
 	{
-		String status = "{ \"status\": \"Não foi possível encontrar o equipamento!!\"}";
-		List<Equipamento> listaEquipamento = 
-				 em.createQuery("FROM equipamento e WHERE e.ip=:ip",Equipamento.class)
-				.setParameter("ip", ip)
-				.getResultList();
+		String status;
+		List<Equipamento> listaEquipamento = em.createQuery(
+											"FROM equipamento e WHERE e.ip=:ip",Equipamento.class)
+											.setParameter("ip", ip)
+											.getResultList();
 				
-		if(listaEquipamento.size() > 0)
-				status = "{ \"status\":\""+listaEquipamento.get(0).getStatus().trim()+"\"}";
+		if(listaEquipamento.size() < 0){
+			status = "{ \"status\": \"Não foi possível encontrar o equipamento!!\"}";	
+		}else{
+			
+			status = "{ \"status\":\""+
+					listaEquipamento.get(0).getStatus().trim()+"\"}";
+		}
 		
 		return status;
 		

@@ -46,6 +46,7 @@ public class EquipamentoBean implements EquipamentoLocal, EquipamentoRemote {
 			
 			ObjectMessage objMessage = session.createObjectMessage(listaIP);
 			producer.send(objMessage);
+			
 		} catch (JMSException e) {
 			throw new RuntimeException(e);
 		}

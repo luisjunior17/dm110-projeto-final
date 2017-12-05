@@ -1,5 +1,6 @@
 package br.inatel.dm110.projeto.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -7,22 +8,39 @@ import javax.enterprise.context.RequestScoped;
 
 import br.inatel.dm110.projeto.api.EquipamentoService;
 import br.inatel.dm110.projeto.interfaces.EquipamentoRemote;
+import br.inatel.dm110.projeto.impl.NetworkIpGen;;
 
 @RequestScoped
 public class EquipamentoServiceImpl implements EquipamentoService {
-	@EJB(lookup="java:app/dm110-ejb-0.1-SNAPSHOT/InventoryBean!br.inatel.dm110.hello.interfaces.InventoryRemote")
-	private EquipamentoRemote inventoryBean;
+	@EJB(lookup="java:app/dm110-ejb-0.1-SNAPSHOT/EquipamentoBean!br.inatel.dm110.projeto.interfaces.EquipamentoRemote")
+	private EquipamentoRemote equipamentoBean;
 
 	@Override
-	public List<String> listAllCustomer() {
+	public void start(String ip, int mask) {
 		// TODO Auto-generated method stub
-		return inventoryBean.listCustomerNames();
-	}
+		
+		String[] listaIP = NetworkIpGen.generateIps(ip, mask);
+		ArrayList<String> ips = new ArrayList<>();
+		
+		for(int i = 0; i < listaIP.length; i++){
+			
+			String genIP = listaIP[i];
+			ips.add(genIP);
 
-	@Override
-	public void createNewCustomer(String name, String email, String endereco) {
-		inventoryBean.createNewCustomer(name, email, endereco);
+		}
+		
+		if(ips.size() > 0){
+			equipamentoBean.addEquipamento(ips);
+		}
 		
 	}
+
+	@Override
+	public String checkStatus(String ip) {
+		// TODO Auto-generated method stub
+		return equipamentoBean.getStatusEquipamento(ip);
+	}
+
+	
 	
 }
